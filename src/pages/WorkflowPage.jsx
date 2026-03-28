@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import ReactMarkdown from 'react-markdown'
 import TopBar from '../components/TopBar'
 import StatusBadge from '../components/StatusBadge'
 import { api } from '../lib/api'
@@ -337,11 +338,11 @@ function OutputCard({ label, content, status, isOutput }) {
           </span>
         )}
       </div>
-      <div className="p-4 font-mono text-[0.78rem] text-ink leading-relaxed whitespace-pre-wrap min-h-[80px]">
+      <div className="p-4 font-sans text-[0.85rem] text-ink leading-relaxed prose prose-sm max-w-none min-h-[80px]">
         {content ? (
-          content
+          <ReactMarkdown>{content}</ReactMarkdown>
         ) : (
-          <span className="text-status-gray italic">
+          <span className="text-status-gray italic font-mono text-[0.78rem]">
             {status === 'running' && isOutput
               ? 'Generating output… Please wait.'
               : status === 'pending'
