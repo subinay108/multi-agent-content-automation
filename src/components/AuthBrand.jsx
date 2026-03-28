@@ -27,7 +27,7 @@ export default function AuthBrand() {
           Content at<br />the speed of<br />
           <span className="text-accent not-italic">agents.</span>
         </h1>
-        <p className="font-mono text-[0.78rem] text-[#4a4a58] mt-5 leading-relaxed">
+        <p className="font-mono text-[0.78rem] text-[#818192] mt-5 leading-relaxed">
           Six specialized AI agents. One seamless workflow.<br />
           From brief to publish in minutes.
         </p>
@@ -39,7 +39,7 @@ export default function AuthBrand() {
           <div
             key={agent}
             className="inline-flex items-center gap-2 px-3 py-1.5 border border-white/5
-                       rounded-full font-mono text-[0.7rem] text-[#4a4a58] w-fit"
+                       rounded-full font-mono text-[0.7rem] text-[#818192] w-fit"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-status-green pulse-dot inline-block" />
             {agent}

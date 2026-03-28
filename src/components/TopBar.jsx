@@ -20,7 +20,7 @@ export default function TopBar() {
   return (
     <header className="sticky top-0 z-50">
       {/* Main bar */}
-      <div className="h-13 bg-ink border-b border-white/5 flex items-center justify-between px-6">
+      <div className="h-13 bg-ink border-b border-white/5 flex items-center justify-between px-6 pt-3">
         <button
           onClick={() => navigate('/dashboard')}
           className="font-sans font-extrabold text-sm tracking-[0.12em] uppercase text-paper
@@ -55,7 +55,7 @@ export default function TopBar() {
                           bg-transparent border-l-0 border-r-0 border-t-0 cursor-pointer tracking-wide
                           ${active
                             ? 'text-accent border-b-accent'
-                            : 'text-[#4a4a58] border-b-transparent hover:text-paper'}`}
+                            : 'text-[#818192] border-b-transparent hover:text-paper'}`}
             >
               {tab.label}
             </button>
