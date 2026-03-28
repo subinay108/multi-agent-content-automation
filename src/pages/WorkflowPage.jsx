@@ -112,7 +112,7 @@ export default function WorkflowPage() {
         navigate={navigate} 
       />
 
-      <div className="flex-1 grid overflow-hidden" style={{ gridTemplateRows: '1fr 150px' }}>
+      <div className="flex-1 grid overflow-hidden" style={{ gridTemplateRows: '1fr auto' }}>
         <div className="grid overflow-hidden" style={{ gridTemplateColumns: '220px 1fr 230px' }}>
           
           <AgentPipeline 
