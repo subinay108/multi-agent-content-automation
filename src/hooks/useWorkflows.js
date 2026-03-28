@@ -1,30 +1,41 @@
 import { useState, useEffect } from 'react'
-import { MOCK_WORKFLOWS } from '../lib/mockData'
+import { supabase } from '../lib/supabaseClient'
+import { useAuth } from '../context/AuthContext'
 
-/**
- * Hook to fetch workflows for the current user.
- * Currently returns mock data — wire to Supabase when your
- * `workflows` table is ready:
- *
- *   const { data, error } = await supabase
- *     .from('workflows')
- *     .select('*')
- *     .eq('user_id', user.id)
- *     .order('created_at', { ascending: false })
- */
 export function useWorkflows() {
   const [workflows, setWorkflows] = useState([])
   const [loading, setLoading]     = useState(true)
   const [error, setError]         = useState(null)
+  const { user } = useAuth()
 
   useEffect(() => {
-    // Simulate async fetch
-    const timer = setTimeout(() => {
-      setWorkflows(MOCK_WORKFLOWS)
-      setLoading(false)
-    }, 600)
-    return () => clearTimeout(timer)
-  }, [])
+    async function fetchWorkflows() {
+      if (!user) {
+        setWorkflows([])
+        setLoading(false)
+        return
+      }
+
+      try {
+        setLoading(true)
+        const { data, error: err } = await supabase
+          .from('workflows')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+
+        if (err) throw err
+        setWorkflows(data || [])
+      } catch (err) {
+        console.error('Error fetching workflows:', err)
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWorkflows()
+  }, [user])
 
   return { workflows, loading, error }
 }

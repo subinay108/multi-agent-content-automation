@@ -2,60 +2,99 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import StatusBadge from '../components/StatusBadge'
-import { MOCK_AGENTS, MOCK_LOGS, MOCK_WORKFLOWS } from '../lib/mockData'
+import { api } from '../lib/api'
+
+function getIconForAgent(name) {
+  const n = (name || '').toLowerCase()
+  if (n.includes('plan')) return '🧠'
+  if (n.includes('research')) return '🔍'
+  if (n.includes('writ') || n.includes('draft')) return '✍️'
+  if (n.includes('edit') || n.includes('review') || n.includes('complian')) return '✨'
+  return '🤖'
+}
 
 export default function WorkflowPage() {
   const { id } = useParams()
   const navigate = useNavigate()
 
-  const [selectedId,  setSelectedId]  = useState('planner')
-  const [agents,      setAgents]      = useState(MOCK_AGENTS)
-  const [logs,        setLogs]        = useState(MOCK_LOGS)
-  const [approved,    setApproved]    = useState(null)   // null | 'approved' | 'rejected'
+  const [selectedId,  setSelectedId]  = useState(null)
+  const [workflow,    setWorkflow]    = useState(null)
+  const [agents,      setAgents]      = useState([])
+  const [logs,        setLogs]        = useState([])
+  const [approved,    setApproved]    = useState(null)
   const [editText,    setEditText]    = useState('')
   const logRef = useRef(null)
 
-  const wf           = MOCK_WORKFLOWS.find(w => w.id === id) ?? MOCK_WORKFLOWS[0]
-  const activeAgent  = agents.find(a => a.id === selectedId) ?? agents[0]
+  const wf = workflow || {}
+  const activeAgent = agents.find(a => a.id === selectedId) || agents[0] || {}
 
-  // Simulate a live log line appearing
   useEffect(() => {
-    const timer = setTimeout(() => {
-      appendLog('Compliance', 'Checking 47 brand guideline rules…')
-    }, 2500)
-    return () => clearTimeout(timer)
-  }, [])
+    let timeoutId;
+    async function fetchData() {
+      try {
+        const data = await api.getWorkflow(id)
+        if (!data) return
+        setWorkflow(data)
+        
+        const mappedAgents = (data.steps || []).map(step => ({
+          id: step.id,
+          name: step.agent_name,
+          status: step.status,
+          input: step.input,
+          output: step.output,
+          icon: getIconForAgent(step.agent_name)
+        }))
+        setAgents(mappedAgents)
+        
+        setSelectedId(prev => {
+           if (prev && mappedAgents.find(a => a.id === prev)) return prev;
+           return mappedAgents.length > 0 ? mappedAgents[0].id : null;
+        })
+        
+        const formattedLogs = (data.logs || []).map(l => {
+            const time = new Date(l.timestamp).toLocaleTimeString([], { hour12: false })
+            return { time, agent: l.agent_name || 'System', msg: l.message }
+        })
+        setLogs(formattedLogs)
+        
+        const isRunning = data.status === 'in_progress' || mappedAgents.some(a => ['running', 'pending', 'in_progress'].includes(a.status));
+        if (isRunning) {
+          timeoutId = setTimeout(fetchData, 3000)
+        }
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    fetchData()
+    return () => clearTimeout(timeoutId)
+  }, [id])
 
-  // Auto-scroll log panel
   useEffect(() => {
     if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight
   }, [logs])
 
-  const appendLog = (agent, msg) => {
-    const now = new Date()
-    const time = [now.getHours(), now.getMinutes(), now.getSeconds()]
-      .map(n => String(n).padStart(2, '0'))
-      .join(':')
-    setLogs(l => [...l, { time, agent, msg }])
+  const handleApprove = async () => {
+    if (!activeAgent.id) return
+    try {
+      await api.approveStep(id, activeAgent.id)
+      setApproved('approved')
+    } catch(err) {}
   }
 
-  const handleApprove = () => {
-    setApproved('approved')
-    appendLog('System', `Output from [${activeAgent.name}] approved by user`)
-  }
-
-  const handleReject = () => {
-    setApproved('rejected')
-    appendLog('System', `Output from [${activeAgent.name}] rejected by user`)
+  const handleReject = async () => {
+    if (!activeAgent.id) return
+    try {
+      await api.rejectStep(id, activeAgent.id)
+      setApproved('rejected')
+    } catch(err) {}
   }
 
   const handleOverride = () => {
     if (!editText.trim()) return
-    appendLog('System', `Manual override submitted for [${activeAgent.name}]`)
     setEditText('')
   }
 
-  const runningCount   = agents.filter(a => a.status === 'running').length
+  const runningCount   = agents.filter(a => ['running', 'in_progress'].includes(a.status)).length
   const completedCount = agents.filter(a => a.status === 'completed').length
 
   return (

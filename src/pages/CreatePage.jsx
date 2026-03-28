@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import TopBar from '../components/TopBar'
 import Spinner from '../components/Spinner'
+import { useAuth } from '../context/AuthContext'
+import { api } from '../lib/api'
 
 const CONTENT_TYPES = [
   { value: 'blog',       label: 'Blog Post' },
@@ -42,6 +44,7 @@ const LANGUAGES = [
 
 export default function CreatePage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [form, setForm] = useState({
     input:    '',
@@ -57,17 +60,18 @@ export default function CreatePage() {
 
   const handleSubmit = async () => {
     if (!form.input.trim()) { setError('Please enter a content brief.'); return }
+    if (!user) { setError('User not authenticated.'); return }
     setError('')
     setLoading(true)
 
-    // TODO: POST to your backend API
-    // const res = await fetch('/api/workflows', { method: 'POST', body: JSON.stringify(form) })
-    // const { id } = await res.json()
-    // navigate(`/workflow/${id}`)
-
-    // Mock: simulate API latency then redirect
-    await new Promise(r => setTimeout(r, 1200))
-    navigate('/workflow/wf_new')
+    try {
+      const res = await api.startWorkflow(user.id, form)
+      navigate(`/workflow/${res.workflow_id}`)
+    } catch (err) {
+      console.error(err)
+      setError(err.message || 'Failed to start workflow')
+      setLoading(false)
+    }
   }
 
   return (
