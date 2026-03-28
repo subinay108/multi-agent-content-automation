@@ -1,0 +1,177 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  :root {
+    --ink:    #0a0a0f;
+    --paper:  #f5f2ec;
+    --paper2: #ede9e0;
+    --accent: #e84d2a;
+    --accent2:#2a6ee8;
+    --gold:   #c8a84b;
+    --muted:  #7a7568;
+    --border: #d4cfc5;
+    --panel:  #ffffff;
+    --green:  #2d7a4f;
+    --yellow: #b87a10;
+    --gray:   #9a9490;
+    --red:    #c0392b;
+  }
+
+  body {
+    font-family: 'DM Mono', monospace;
+    background: var(--paper);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  input, textarea, select {
+    font-family: 'DM Mono', monospace;
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+}
+
+@layer components {
+  /* ── Buttons ────────────────────────────────────── */
+  .btn-primary {
+    @apply w-full py-3 px-5 bg-accent text-white rounded-md
+           font-sans font-semibold text-sm tracking-wide
+           border-none cursor-pointer transition-all duration-150
+           hover:bg-[#d03f1f] active:scale-[0.99]
+           disabled:bg-border disabled:text-muted disabled:cursor-not-allowed
+           flex items-center justify-center gap-2;
+  }
+
+  .btn-ghost {
+    @apply py-2 px-4 bg-transparent text-muted border border-border rounded-md
+           font-mono text-xs cursor-pointer transition-all duration-150
+           hover:border-ink hover:text-ink;
+  }
+
+  .btn-danger {
+    @apply py-2 px-4 bg-transparent text-status-red border border-status-red/30 rounded-md
+           font-mono text-xs cursor-pointer transition-all duration-150
+           hover:bg-status-red/5;
+  }
+
+  .btn-approve {
+    @apply w-full py-2.5 px-4 bg-status-green text-white border-none rounded-md
+           font-sans font-semibold text-sm cursor-pointer transition-all duration-150
+           hover:bg-[#236040]
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-reject {
+    @apply w-full py-2.5 px-4 bg-transparent text-status-red
+           border border-status-red/40 rounded-md
+           font-sans font-semibold text-sm cursor-pointer transition-all duration-150
+           hover:bg-status-red/5 mt-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  /* ── Form Controls ──────────────────────────────── */
+  .form-input {
+    @apply w-full py-2.5 px-3.5 bg-white border border-border rounded-md
+           font-mono text-sm text-ink outline-none
+           transition-all duration-150 placeholder:text-status-gray
+           focus:border-accent focus:shadow-[0_0_0_3px_rgba(232,77,42,0.1)];
+  }
+
+  .form-select {
+    @apply w-full py-2.5 px-3.5 bg-white border border-border rounded-md
+           font-mono text-sm text-ink outline-none cursor-pointer
+           appearance-none transition-all duration-150
+           focus:border-accent;
+    background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%237a7568' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+  }
+
+  .form-textarea {
+    @apply w-full py-2.5 px-3.5 bg-white border border-border rounded-md
+           font-mono text-sm text-ink outline-none resize-y
+           transition-all duration-150 leading-relaxed
+           focus:border-accent focus:shadow-[0_0_0_3px_rgba(232,77,42,0.1)];
+  }
+
+  .form-label {
+    @apply block font-mono text-[0.68rem] font-medium text-muted
+           tracking-[0.08em] uppercase mb-1.5;
+  }
+
+  /* ── Cards ──────────────────────────────────────── */
+  .card {
+    @apply bg-white border border-border rounded-xl p-5;
+  }
+
+  /* ── Tags / Badges ──────────────────────────────── */
+  .tag {
+    @apply inline-flex items-center px-2 py-0.5 bg-paper2 border border-border
+           rounded font-mono text-[0.68rem] text-muted;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full
+           font-mono text-[0.68rem] font-medium tracking-wide uppercase;
+  }
+
+  .badge-completed { @apply bg-status-green/10 text-status-green; }
+  .badge-running   { @apply bg-status-yellow/10 text-status-yellow; }
+  .badge-pending   { @apply bg-status-gray/10 text-status-gray; }
+
+  /* ── Section label ──────────────────────────────── */
+  .section-label {
+    @apply font-mono text-[0.68rem] font-medium tracking-[0.12em] uppercase text-muted mb-3;
+  }
+
+  /* ── Panel heading (dark bg) ────────────────────── */
+  .panel-heading {
+    @apply font-mono text-[0.65rem] font-medium tracking-[0.12em] uppercase
+           text-[#4a4a58] mb-4;
+  }
+}
+
+@layer utilities {
+  .fade-in {
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .spin {
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .pulse-dot {
+    animation: pulseDot 1.8s ease-in-out infinite;
+  }
+
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.25; }
+  }
+
+  .running-bar {
+    animation: runningBar 1.8s ease-in-out infinite;
+  }
+
+  @keyframes runningBar {
+    0%   { width: 0%;   opacity: 1; }
+    80%  { width: 100%; opacity: 1; }
+    100% { width: 100%; opacity: 0; }
+  }
+}
