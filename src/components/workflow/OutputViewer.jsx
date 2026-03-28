@@ -55,8 +55,10 @@ export default function OutputViewer({ activeAgent }) {
         <div className="h-0.5 bg-gradient-to-r from-accent to-accent2 rounded running-bar mb-4" />
       )}
 
-      <OutputCard label="Input" content={activeAgent.input} status={activeAgent.status} />
-      <OutputCard label="Output" content={activeAgent.output} status={activeAgent.status} isOutput />
+      <div className="grid grid-cols-2 gap-4">
+        <OutputCard label="Input" content={activeAgent.input} status={activeAgent.status} />
+        <OutputCard label="Output" content={activeAgent.output} status={activeAgent.status} isOutput />
+      </div>
     </main>
   );
 }

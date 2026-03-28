@@ -14,8 +14,8 @@ def get_user_id(request: Request) -> str:
 async def start_workflow(req: WorkflowStartRequest, request: Request, background_tasks: BackgroundTasks):
     user_id = get_user_id(request)
     
-    workflow_id = create_workflow(user_id, req.input)
     input_data = req.model_dump()
+    workflow_id = create_workflow(user_id, input_data)
     
     # Run the pipeline sequentially in the background
     background_tasks.add_task(run_pipeline, workflow_id, input_data)

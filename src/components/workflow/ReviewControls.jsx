@@ -12,7 +12,7 @@ export default function ReviewControls({
   }) {
     return (
       <aside className="bg-paper2 border-l border-border overflow-y-auto p-4">
-        <p className="panel-heading text-[#4a4a58] text-[0.62rem] uppercase font-bold tracking-[0.12em] mb-4">Review Controls</p>
+        <p className="panel-heading text-[#4a4a58] text-[0.62rem] uppercase font-bold tracking-[0.12em] mb-4">Review: {activeAgent.name || 'Agent'}</p>
   
         {approved === 'approved' && (
           <div className="bg-status-green/10 border border-status-green/20 text-status-green

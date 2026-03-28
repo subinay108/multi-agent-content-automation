@@ -8,7 +8,7 @@ export default function Dashboard() {
   const navigate = useNavigate()
   const { workflows, loading } = useWorkflows()
 
-  const running   = workflows.filter(w => w.status === 'running').length
+  const running = workflows.filter(w => w.status === 'running').length
   const completed = workflows.filter(w => w.status === 'completed').length
 
   return (
@@ -58,7 +58,7 @@ export default function Dashboard() {
 }
 
 function WorkflowCard({ workflow, onClick }) {
-  const { title, type, status, created, audience, tone } = workflow
+  const { input, type, status, created, audience, tone } = workflow
   return (
     <div
       onClick={onClick}
@@ -71,7 +71,7 @@ function WorkflowCard({ workflow, onClick }) {
 
       <div className="flex items-start justify-between gap-2 mb-3">
         <h3 className="font-sans font-semibold text-[0.92rem] text-ink tracking-tight leading-snug">
-          {title}
+          {input}
         </h3>
         <StatusBadge status={status} />
       </div>

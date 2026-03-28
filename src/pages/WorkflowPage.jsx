@@ -25,7 +25,7 @@ export default function WorkflowPage() {
   const [workflow,    setWorkflow]    = useState(null)
   const [agents,      setAgents]      = useState([])
   const [logs,        setLogs]        = useState([])
-  const [approved,    setApproved]    = useState(null)
+  const [agentStates, setAgentStates] = useState({}) // { [agentId]: 'approved' | 'rejected' | null }
   const [editText,    setEditText]    = useState('')
   const logRef = useRef(null)
 
@@ -49,6 +49,15 @@ export default function WorkflowPage() {
           icon: getIconForAgent(step.agent_name)
         }))
         setAgents(mappedAgents)
+        
+        // Map DB statuses (approved/rejected) to UI state
+        const newAgentStates = {}
+        mappedAgents.forEach(a => {
+          if (a.status === 'approved' || a.status === 'rejected') {
+            newAgentStates[a.id] = a.status
+          }
+        })
+        setAgentStates(newAgentStates)
         
         setSelectedId(prev => {
            if (prev && mappedAgents.find(a => a.id === prev)) return prev;
@@ -81,7 +90,7 @@ export default function WorkflowPage() {
     if (!activeAgent.id) return
     try {
       await api.approveStep(id, activeAgent.id)
-      setApproved('approved')
+      setAgentStates(prev => ({ ...prev, [activeAgent.id]: 'approved' }))
     } catch(err) {}
   }
 
@@ -89,7 +98,7 @@ export default function WorkflowPage() {
     if (!activeAgent.id) return
     try {
       await api.rejectStep(id, activeAgent.id)
-      setApproved('rejected')
+      setAgentStates(prev => ({ ...prev, [activeAgent.id]: 'rejected' }))
     } catch(err) {}
   }
 
@@ -126,7 +135,7 @@ export default function WorkflowPage() {
           <ReviewControls 
             wf={wf}
             activeAgent={activeAgent}
-            approved={approved}
+            approved={agentStates[activeAgent.id] || null}
             handleApprove={handleApprove}
             handleReject={handleReject}
             editText={editText}

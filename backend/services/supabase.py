@@ -9,10 +9,13 @@ SUPABASE_KEY = os.getenv("SUPABASE_KEY", "public-anon-key")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-def create_workflow(user_id: str, workflow_input: str) -> str:
+def create_workflow(user_id: str, input_data: dict) -> str:
     response = supabase.table("workflows").insert({
         "user_id": user_id,
-        "input": workflow_input,
+        "input": input_data.get("input", ""),
+        "type": input_data.get("type", "blog"),
+        "audience": input_data.get("audience", "general"),
+        "tone": input_data.get("tone", "professional"),
         "status": "in_progress"
     }).execute()
     return response.data[0]["id"]
