@@ -1,6 +1,15 @@
-# MACAS — Multi-Agent Content Automation System
+# Multi-Agent Content Automation System (Frontend)
 
-A React + Vite + Tailwind CSS + Supabase frontend for orchestrating multi-agent AI content workflows.
+This is the **React + Vite** frontend for the Multi-Agent Content Automation System. It provides a sleek, modern dashboard for orchestrating AI agents in various content workflows.
+
+---
+
+## 🛠️ Prerequisites
+
+Before you start, ensure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/)
+- A [Supabase](https://supabase.com/) project
 
 ---
 
@@ -12,128 +21,71 @@ A React + Vite + Tailwind CSS + Supabase frontend for orchestrating multi-agent 
 npm install
 ```
 
-### 2. Configure Supabase
+### 2. Configure Environment Variables
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your Supabase project credentials:
+Edit your `.env` file with your Supabase credentials:
 
-```
+```bash
+# src/lib/supabaseClient.js reads these
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-You can find these in your [Supabase dashboard](https://supabase.com/dashboard) under **Project Settings → API**.
-
-### 3. Run the dev server
+### 3. Run the Development Server
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173)
+The app will be available at [http://localhost:5173](http://localhost:5173).
 
 ---
 
-## 📁 Project Structure
+## 🔗 Connecting to the Backend
 
-```
+The frontend is designed to work in tandem with a **FastAPI backend** that handles the actual agent execution. 
+
+> [!IMPORTANT]
+> To enable real-world workflow automation, you **must** also set up the backend. Follow the instructions in [backend/README.md](./backend/README.md).
+
+---
+
+## 📁 Frontend structure
+
+```text
 src/
-├── components/
-│   ├── AuthBrand.jsx       # Left panel on auth pages
-│   ├── ProtectedRoute.jsx  # Auth guard for private routes
-│   ├── Spinner.jsx         # Loading spinner
-│   ├── StatusBadge.jsx     # Workflow/agent status badge
-│   └── TopBar.jsx          # App header + nav tabs
-├── context/
-│   └── AuthContext.jsx     # Global auth state + helpers
-├── hooks/
-│   └── useWorkflows.js     # Data hook (swap mock → Supabase)
-├── lib/
-│   ├── mockData.js         # Mock workflows, agents, logs
-│   └── supabaseClient.js   # Supabase client initialisation
-├── pages/
-│   ├── LoginPage.jsx
-│   ├── SignupPage.jsx
-│   ├── Dashboard.jsx
-│   ├── CreatePage.jsx
-│   ├── WorkflowPage.jsx    # 3-panel workflow UI
-│   └── ProfilePage.jsx
-├── App.jsx                 # Route definitions
-├── main.jsx                # React entry point
-└── index.css               # Tailwind + global styles
+├── components/         # Reusable UI components (Shared layout, TopBar, etc)
+├── context/            # AuthContext for global user state
+├── hooks/              # Custom React hooks (useWorkflows, etc)
+├── lib/                # Config files (supabaseClient) and mock data
+├── pages/              # Application pages (Dashboard, WorkflowPage, Auth)
+├── App.jsx             # React Router routing
+├── main.jsx            # React root entry point
+└── index.css           # Styling with Tailwind CSS and custom tokens
 ```
 
 ---
 
 ## 🔐 Auth Flow
 
-- **Signup** → `supabase.auth.signUp` → redirect to `/dashboard`
-- **Login** → `supabase.auth.signInWithPassword` → redirect to `/dashboard`
-- **Logout** → `supabase.auth.signOut` → redirect to `/login`
-- **Protected routes** → `ProtectedRoute` component redirects unauthenticated users to `/login`
-- Session persistence is handled automatically by the Supabase JS client.
-
-> **Email confirmation**: If your Supabase project has email confirmation enabled, users will need to verify their email before they can log in. The signup page handles this case and shows a message.
+- **Signup** → `supabase.auth.signUp`
+- **Login** → `supabase.auth.signInWithPassword`
+- **Protected Routes** → `ProtectedRoute` component ensures only authenticated users access the dashboard.
+- Sessions are persisted automatically via the Supabase guest client.
 
 ---
 
-## 📄 Pages
+## 🎨 Tech Stack
 
-| Route            | Page            | Protected |
-|------------------|-----------------|-----------|
-| `/login`         | Login           | ✗         |
-| `/signup`        | Signup          | ✗         |
-| `/dashboard`     | Dashboard       | ✓         |
-| `/create`        | Create Workflow | ✓         |
-| `/workflow/:id`  | Workflow View   | ✓         |
-| `/profile`       | Profile         | ✓         |
-
----
-
-## 🔌 Wiring to a Real Backend
-
-### Workflows (Supabase DB)
-
-In `src/hooks/useWorkflows.js`, replace the mock data with a real Supabase query:
-
-```js
-import { supabase } from '../lib/supabaseClient'
-
-const { data, error } = await supabase
-  .from('workflows')
-  .select('*')
-  .order('created_at', { ascending: false })
-```
-
-### Create Workflow API
-
-In `src/pages/CreatePage.jsx`, replace the mock timeout with a real POST:
-
-```js
-const res = await fetch('/api/workflows', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(form),
-})
-const { id } = await res.json()
-navigate(`/workflow/${id}`)
-```
-
-### Real-time Agent Updates
-
-Use Supabase Realtime to push agent status updates to the workflow page:
-
-```js
-supabase
-  .channel('workflow-' + id)
-  .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'agents' }, payload => {
-    // update agent state
-  })
-  .subscribe()
-```
+- **Framework**: React 18 + Vite 5
+- **Styling**: Tailwind CSS 3
+- **Routing**: React Router v6
+- **Database/Auth**: Supabase JS v2
+- **Markdown**: React-Markdown (for displaying agent outputs)
 
 ---
 
@@ -143,13 +95,4 @@ supabase
 npm run build
 ```
 
-Output is in `dist/`. Deploy to Vercel, Netlify, or any static host.
-
----
-
-## 🎨 Tech Stack
-
-- **React 18** + **Vite 5**
-- **Tailwind CSS 3**
-- **React Router v6**
-- **Supabase JS v2** (Auth + Database)
+The output will be in the `dist/` directory, ready to be deployed to platforms like Vercel or Netlify.
