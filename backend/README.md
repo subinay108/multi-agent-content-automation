@@ -8,7 +8,7 @@ This is the **FastAPI** backend for the Multi-Agent Content Automation System. I
 
 - **Python**: v3.13 or higher
 - **Package Manager**: [uv](https://github.com/astral-sh/uv) (recommended) or `pip`
-- **Supabase**: Access to a Supabase project for data persistence
+- **Supabase**: Access to a Supabase project (refer to [supabase.md](../supabase.md) for table setup)
 
 ---
 

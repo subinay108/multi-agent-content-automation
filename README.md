@@ -9,7 +9,7 @@ This is the **React + Vite** frontend for the Multi-Agent Content Automation Sys
 Before you start, ensure you have the following installed:
 - [Node.js](https://nodejs.org/) (v18 or higher)
 - [npm](https://www.npmjs.com/)
-- A [Supabase](https://supabase.com/) project
+- A [Supabase](https://supabase.com/) project (refer to [supabase.md](./supabase.md) for table setup)
 
 ---
 
